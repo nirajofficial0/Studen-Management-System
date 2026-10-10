@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Profile & Digital ID | Student Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span class="logo-icon">🎓</span>
+                <div>
+                    <h2>Student Portal</h2>
+                    <small>School Management</small>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html"><span class="nav-icon">📊</span> Dashboard</a></li>
+                    <li><a href="profile.html" class="active"><span class="nav-icon">👤</span> Student Profile</a></li>
+                    <li><a href="courses.html"><span class="nav-icon">📚</span> Courses & Subjects</a></li>
+                    <li><a href="attendance.html"><span class="nav-icon">📅</span> Attendance</a></li>
+                    <li><a href="marks.html"><span class="nav-icon">📝</span> Marks & Results</a></li>
+                    <li><a href="timetable.html"><span class="nav-icon">⏰</span> Timetable</a></li>
+                    <li><a href="assignments.html"><span class="nav-icon">📂</span> Assignments</a></li>
+                    <li><a href="exams.html"><span class="nav-icon">📋</span> Examinations</a></li>
+                    <li><a href="fees.html"><span class="nav-icon">💳</span> Fees & Payments</a></li>
+                    <li><a href="notifications.html"><span class="nav-icon">🔔</span> Notifications</a></li>
+                    <li><a href="study-material.html"><span class="nav-icon">📖</span> Study Material</a></li>
+                    <li><a href="communication.html"><span class="nav-icon">💬</span> Doubts & Messages</a></li>
+                    <li><a href="documents.html"><span class="nav-icon">📄</span> ID & Certificates</a></li>
+                    <li><a href="leave.html"><span class="nav-icon">✈️</span> Leave Request</a></li>
+                    <li><a href="feedback.html"><span class="nav-icon">⭐</span> Feedback</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="logout-btn" style="width: 100%;" onclick="logout()">🚪 Logout</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <div>
+                    <h1>Student Profile & ID Card</h1>
+                    <p style="margin: 4px 0 0 0; color: var(--text-muted);">Manage your personal academic records & digital identity</p>
+                </div>
+                <div class="page-header-actions">
+                    <button class="theme-toggle-btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+                    <button class="primary-btn" onclick="openEditProfileModal()" style="width: auto;">✏️ Edit Profile</button>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 24px; align-items: start;">
+                <!-- Digital Student ID Card Preview -->
+                <div class="panel" style="text-align: center;">
+                    <h3 style="margin-bottom: 16px;">🪪 Digital Student ID Card</h3>
+                    <div class="id-card-container" id="printableIDCard">
+                        <div class="id-card-header">
+                            <h3 style="margin: 0; font-size: 1.1rem; color: white;">BABU BANARASI DAS UNIVERSITY,LUCKNOW</h3>
+                            <small style="color: #bfdbfe; font-size: 0.78rem;">STUDENT IDENTITY CARD • 2024-2027</small>
+                        </div>
+                        <div class="id-card-body">
+                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80" alt="Student Photo" class="id-card-avatar" id="idCardPhoto">
+                            <div class="id-card-details" style="text-align: left;">
+                                <div style="font-weight: 700; font-size: 1.05rem;" id="idCardName">Student One</div>
+                                <div style="color: #dbeafe;">Roll: <strong id="idCardRoll">STD-2026-042</strong></div>
+                                <div style="color: #dbeafe;">Course: <span id="idCardCourse">BACHELOR OF COMPUTER APPLICATION (BCA)</span></div>
+                                <div style="color: #dbeafe;">Blood Group: <strong id="idCardBlood">O+</strong></div>
+                                <div style="color: #dbeafe;">Contact: <span id="idCardPhone">9876543212</span></div>
+                            </div>
+                        </div>
+                        <div class="id-card-qr" style="margin-top: 16px; background: white; padding: 8px; border-radius: 10px;">
+                            <div id="studentQRCode"></div>
+                        </div>
+                        <small style="display: block; margin-top: 8px; font-size: 0.72rem; color: #dbeafe;">Scan QR to verify official student authenticity</small>
+                    </div>
+
+                    <button class="secondary-btn" onclick="window.print()" style="margin-top: 10px;">🖨️ Print / Download ID Card</button>
+                </div>
+
+                <!-- Detailed Information Card -->
+                <div class="panel">
+                    <h3>📋 Personal & Academic Information</h3>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 20px; font-size: 0.93rem;">
+                        <div>
+                            <strong style="color: var(--text-muted); display: block;">Full Name</strong>
+                            <span id="profName" style="font-weight: 600;">Student One</span>
+                        </div>
+                        <div>
+                            <strong style="color: var(--text-muted); display: block;">Student ID / Roll No</strong>
+                            <span id="profRoll" style="font-weight: 600;">STD-2026-042</span>
+                        </div>
+                        <div>
+                            <strong style="color: var(--text-muted); display: block;">Email Address</strong>
+                            <span id="profEmail">student@school.com</span>
+                        </div>
+                        <div>
+                            <strong style="color: var(--text-muted); display: block;">Mobile Number</strong>
+                            <span id="profPhone">9876543212</span>
+                        </div>
+                        <div>
+                            <strong style="color: var(--text-muted); display: block;">Course Program</strong>
+                            <span id="profCourse">B.Tech - Computer Science</span>
+                        </div>
+                        <div>
+                            <strong style="color: var(--text-muted); display: block;">Current Semester</strong>
+                            <span id="profSemester">Semester 4</span>
+                        </div>
+                        <div>
+                            <strong style="color: var(--text-muted); display: block;">Date of Birth</strong>
+                            <span id="profDOB">May 14, 2004</span>
+                        </div>
+                        <div>
+                            <strong style="color: var(--text-muted); display: block;">Blood Group</strong>
+                            <span id="profBlood">O+</span>
+                        </div>
+                        <div style="grid-column: 1 / -1;">
+                            <strong style="color: var(--text-muted); display: block;">Permanent Address</strong>
+                            <span id="profAddress">LUCKNOW, UTTAR PRADESH 226001</span>
+                        </div>
+                        <div>
+                            <strong style="color: var(--text-muted); display: block;">Parent / Guardian Name</strong>
+                            <span id="profGuardianName">FANALA</span>
+                        </div>
+                        <div>
+                            <strong style="color: var(--text-muted); display: block;">Guardian Contact</strong>
+                            <span id="profGuardianPhone">9876543299</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal-overlay" id="editProfileModal">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3>Edit Profile Details</h3>
+                <button class="modal-close" onclick="closeEditProfileModal()">&times;</button>
+            </div>
+            <form id="editProfileForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="editName">Full Name</label>
+                        <input type="text" id="editName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editPhone">Mobile Number (10 Digits)</label>
+                        <input type="tel" id="editPhone" pattern="[0-9]{10}" maxlength="10" required>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div class="form-group">
+                            <label for="editDOB">Date of Birth</label>
+                            <input type="date" id="editDOB">
+                        </div>
+                        <div class="form-group">
+                            <label for="editBlood">Blood Group</label>
+                            <select id="editBlood">
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="editAddress">Residential Address</label>
+                        <input type="text" id="editAddress">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div class="form-group">
+                            <label for="editGuardian">Guardian Name</label>
+                            <input type="text" id="editGuardian">
+                        </div>
+                        <div class="form-group">
+                            <label for="editGuardianPhone">Guardian Mobile</label>
+                            <input type="tel" id="editGuardianPhone" pattern="[0-9]{10}" maxlength="10">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="secondary-btn" onclick="closeEditProfileModal()">Cancel</button>
+                    <button type="submit" class="primary-btn" style="width: auto;">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initStudentProfile();
+        });
+    </script>
+</body>
+</html>

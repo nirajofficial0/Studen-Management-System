@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Timetable | Student Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .timetable-card-slot {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 5px solid var(--primary-blue);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--card-shadow);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .time-badge {
+            background: var(--bg-secondary);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            color: var(--primary-blue);
+            font-size: 0.88rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span class="logo-icon">🎓</span>
+                <div>
+                    <h2>Student Portal</h2>
+                    <small>School Management</small>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html"><span class="nav-icon">📊</span> Dashboard</a></li>
+                    <li><a href="profile.html"><span class="nav-icon">👤</span> Student Profile</a></li>
+                    <li><a href="courses.html"><span class="nav-icon">📚</span> Courses & Subjects</a></li>
+                    <li><a href="attendance.html"><span class="nav-icon">📅</span> Attendance</a></li>
+                    <li><a href="marks.html"><span class="nav-icon">📝</span> Marks & Results</a></li>
+                    <li><a href="timetable.html" class="active"><span class="nav-icon">⏰</span> Timetable</a></li>
+                    <li><a href="assignments.html"><span class="nav-icon">📂</span> Assignments</a></li>
+                    <li><a href="exams.html"><span class="nav-icon">📋</span> Examinations</a></li>
+                    <li><a href="fees.html"><span class="nav-icon">💳</span> Fees & Payments</a></li>
+                    <li><a href="notifications.html"><span class="nav-icon">🔔</span> Notifications</a></li>
+                    <li><a href="study-material.html"><span class="nav-icon">📖</span> Study Material</a></li>
+                    <li><a href="communication.html"><span class="nav-icon">💬</span> Doubts & Messages</a></li>
+                    <li><a href="documents.html"><span class="nav-icon">📄</span> ID & Certificates</a></li>
+                    <li><a href="leave.html"><span class="nav-icon">✈️</span> Leave Request</a></li>
+                    <li><a href="feedback.html"><span class="nav-icon">⭐</span> Feedback</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="logout-btn" style="width: 100%;" onclick="logout()">🚪 Logout</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <div>
+                    <h1>Weekly Class Timetable</h1>
+                    <p style="margin: 4px 0 0 0; color: var(--text-muted);">Semester 4 • Room & Teacher schedule</p>
+                </div>
+                <div class="page-header-actions">
+                    <button class="theme-toggle-btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+                </div>
+            </div>
+
+            <!-- Day Selector Tabs -->
+            <div class="tabs-nav" id="dayTabsNav">
+                <button class="tab-btn active" onclick="switchTimetableDay('Monday')">Monday</button>
+                <button class="tab-btn" onclick="switchTimetableDay('Tuesday')">Tuesday</button>
+                <button class="tab-btn" onclick="switchTimetableDay('Wednesday')">Wednesday</button>
+                <button class="tab-btn" onclick="switchTimetableDay('Thursday')">Thursday</button>
+                <button class="tab-btn" onclick="switchTimetableDay('Friday')">Friday</button>
+                <button class="tab-btn" onclick="switchTimetableDay('Saturday')">Saturday</button>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <h3 id="currentDayTitle">📅 Monday's Schedule</h3>
+                    <span class="badge badge-primary" id="totalClassesCount">4 Classes Scheduled</span>
+                </div>
+
+                <div id="timetableSlotsContainer">
+                    <p>Loading schedule...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initStudentTimetable();
+        });
+    </script>
+</body>
+</html>

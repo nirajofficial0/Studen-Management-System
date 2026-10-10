@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marks & Results | Student Portal</title>
+    <!-- jsPDF & autotable for 1-Click PDF Marksheet Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .report-card-print {
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 30px;
+            background: var(--bg-card);
+            margin-top: 24px;
+        }
+
+        .report-card-header {
+            text-align: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 18px;
+            margin-bottom: 20px;
+        }
+
+        .report-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            background: var(--bg-secondary);
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span class="logo-icon">🎓</span>
+                <div>
+                    <h2>Student Portal</h2>
+                    <small>School Management</small>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html"><span class="nav-icon">📊</span> Dashboard</a></li>
+                    <li><a href="profile.html"><span class="nav-icon">👤</span> Student Profile</a></li>
+                    <li><a href="courses.html"><span class="nav-icon">📚</span> Courses & Subjects</a></li>
+                    <li><a href="attendance.html"><span class="nav-icon">📅</span> Attendance</a></li>
+                    <li><a href="marks.html" class="active"><span class="nav-icon">📝</span> Marks & Results</a></li>
+                    <li><a href="timetable.html"><span class="nav-icon">⏰</span> Timetable</a></li>
+                    <li><a href="assignments.html"><span class="nav-icon">📂</span> Assignments</a></li>
+                    <li><a href="exams.html"><span class="nav-icon">📋</span> Examinations</a></li>
+                    <li><a href="fees.html"><span class="nav-icon">💳</span> Fees & Payments</a></li>
+                    <li><a href="notifications.html"><span class="nav-icon">🔔</span> Notifications</a></li>
+                    <li><a href="study-material.html"><span class="nav-icon">📖</span> Study Material</a></li>
+                    <li><a href="communication.html"><span class="nav-icon">💬</span> Doubts & Messages</a></li>
+                    <li><a href="documents.html"><span class="nav-icon">📄</span> ID & Certificates</a></li>
+                    <li><a href="leave.html"><span class="nav-icon">✈️</span> Leave Request</a></li>
+                    <li><a href="feedback.html"><span class="nav-icon">⭐</span> Feedback</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="logout-btn" style="width: 100%;" onclick="logout()">🚪 Logout</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <div>
+                    <h1>Marks, Grades & Official Report Card</h1>
+                    <p style="margin: 4px 0 0 0; color: var(--text-muted);">Semester 4 Examination Results & Cumulative Performance</p>
+                </div>
+                <div class="page-header-actions" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <button class="theme-toggle-btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+                    <button class="primary-btn" onclick="downloadReportCardPDF()" style="width: auto; background: #10b981;">
+                        ⬇️ Download Official PDF Marksheet
+                    </button>
+                    <button class="secondary-btn" onclick="window.print()" style="width: auto;">
+                        🖨️ Print
+                    </button>
+                </div>
+            </div>
+
+            <!-- Performance Overview Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span>Semester SGPA</span>
+                    <h3 id="marksSGPA" style="color: #2563eb;">8.82</h3>
+                    <small>Credit Points: 176.4 / 20</small>
+                </div>
+                <div class="stat-card">
+                    <span>Cumulative CGPA</span>
+                    <h3 id="marksCGPA" style="color: #7c3aed;">8.65</h3>
+                    <small>Semesters 1 through 4</small>
+                </div>
+                <div class="stat-card">
+                    <span>Overall Grade</span>
+                    <h3 id="marksGrade" style="color: #10b981;">A+</h3>
+                    <small>First Class with Distinction</small>
+                </div>
+                <div class="stat-card">
+                    <span>Result Status</span>
+                    <h3 style="color: #10b981;">PASSED</h3>
+                    <small>Zero Backlogs / Arrears</small>
+                </div>
+            </div>
+
+            <!-- Printable Official Report Card Section -->
+            <div class="report-card-print" id="printableReportCard">
+                <div class="report-card-header">
+                    <h2 style="margin: 0 0 4px 0; color: var(--primary-blue);">BABU BANARASI DAS UNIVERSITY, LUCKNOW</h2>
+                    <h4 style="margin: 0; color: var(--text-muted);">OFFICIAL GRADE SHEET & SEMESTER REPORT CARD</h4>
+                    <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: var(--text-muted);">Academic Year: 2025-2026 • Autonomous Institution</p>
+                </div>
+
+                <div class="report-meta-grid">
+                    <div><strong>Student Name:</strong> <span id="rcName">Student One</span></div>
+                    <div><strong>Roll / Reg No:</strong> <span id="rcRoll">STD-2026-042</span></div>
+                    <div><strong>Degree / Branch:</strong> <span id="rcCourse">BACHELOR OF COMPUTER APPLICATION (BCA)</span></div>
+                    <div><strong>Semester:</strong> <span id="rcSem">Semester 4</span></div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Subject Title</th>
+                            <th>Internal (20)</th>
+                            <th>Assign (10)</th>
+                            <th>Practical (20)</th>
+                            <th>End-Sem (50)</th>
+                            <th>Total (100)</th>
+                            <th>Grade</th>
+                            <th>Credits</th>
+                        </tr>
+                    </thead>
+                    <tbody id="marksTableBody">
+                        <tr>
+                            <td colspan="9">Loading marks breakdown...</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                    <div>
+                        <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">Grading Scale: A+ (90-100), A (80-89), B+ (70-79), B (60-69), C (50-59), D (40-49), F (&lt;40)</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="height: 40px; display: flex; align-items: center; justify-content: flex-end;">
+                            <span style="font-family: cursive; font-size: 1.1rem; color: #2563eb;">Controller of Exams</span>
+                        </div>
+                        <strong style="font-size: 0.88rem; display: block; border-top: 1px dashed var(--text-muted); padding-top: 4px;">Controller of Examinations</strong>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initStudentMarks();
+        });
+    </script>
+</body>
+
+</html>

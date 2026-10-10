@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificates & Documents | Student Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .cert-preview-box {
+            border: 3px double var(--border-color);
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 36px;
+            margin-top: 24px;
+            display: none;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span class="logo-icon">🎓</span>
+                <div>
+                    <h2>Student Portal</h2>
+                    <small>School Management</small>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html"><span class="nav-icon">📊</span> Dashboard</a></li>
+                    <li><a href="profile.html"><span class="nav-icon">👤</span> Student Profile</a></li>
+                    <li><a href="courses.html"><span class="nav-icon">📚</span> Courses & Subjects</a></li>
+                    <li><a href="attendance.html"><span class="nav-icon">📅</span> Attendance</a></li>
+                    <li><a href="marks.html"><span class="nav-icon">📝</span> Marks & Results</a></li>
+                    <li><a href="timetable.html"><span class="nav-icon">⏰</span> Timetable</a></li>
+                    <li><a href="assignments.html"><span class="nav-icon">📂</span> Assignments</a></li>
+                    <li><a href="exams.html"><span class="nav-icon">📋</span> Examinations</a></li>
+                    <li><a href="fees.html"><span class="nav-icon">💳</span> Fees & Payments</a></li>
+                    <li><a href="notifications.html"><span class="nav-icon">🔔</span> Notifications</a></li>
+                    <li><a href="study-material.html"><span class="nav-icon">📖</span> Study Material</a></li>
+                    <li><a href="communication.html"><span class="nav-icon">💬</span> Doubts & Messages</a></li>
+                    <li><a href="documents.html" class="active"><span class="nav-icon">📄</span> ID & Certificates</a></li>
+                    <li><a href="leave.html"><span class="nav-icon">✈️</span> Leave Request</a></li>
+                    <li><a href="feedback.html"><span class="nav-icon">⭐</span> Feedback</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="logout-btn" style="width: 100%;" onclick="logout()">🚪 Logout</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <div>
+                    <h1>Official Certificates & Document Requests</h1>
+                    <p style="margin: 4px 0 0 0; color: var(--text-muted);">Request, verify and download institutional certificates</p>
+                </div>
+                <div class="page-header-actions">
+                    <button class="theme-toggle-btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+                    <button class="primary-btn" onclick="openRequestDocModal()" style="width: auto;">📝 Request New Certificate</button>
+                </div>
+            </div>
+
+            <!-- Documents Table -->
+            <div class="table-card">
+                <div class="panel-header">
+                    <h3>📜 My Certificates & Issued Documents</h3>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Document ID</th>
+                            <th>Certificate Title</th>
+                            <th>Category</th>
+                            <th>Issue Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="documentsTableBody">
+                        <tr><td colspan="6">Loading documents...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Printable Certificate Preview Box -->
+            <div class="cert-preview-box" id="printableCertBox">
+                <h2 style="margin: 0 0 6px 0; color: var(--primary-blue);">BABU BANARASI DAS UNIVERSITY,LUCKNOW</h2>
+                <h4 style="margin: 0; color: var(--text-muted); letter-spacing: 0.1em;">BONAFIDE CERTIFICATE</h4>
+                <p style="margin: 6px 0 24px 0; font-size: 0.85rem; color: var(--text-muted);">Ref: NIT/CERT/2026/0842</p>
+
+                <p style="font-size: 1.05rem; line-height: 1.8; max-width: 650px; margin: 0 auto 30px auto; text-align: justify;">
+                    This is to certify that <strong>Student One</strong> (Roll No: <strong>STD-2026-042</strong>), son/daughter of <strong>FALANA</strong>, is a bonafide student of this Institute pursuing <strong>Bachelor of Technology in Computer Science & Engineering</strong>, currently enrolled in <strong>Semester 4</strong> during the academic year 2025-2026. His/Her conduct and character during this period have been found to be good.
+                </p>
+
+                <div style="display: flex; justify-content: space-between; margin-top: 50px; padding: 0 40px;">
+                    <div>
+                        <small style="display: block; color: var(--text-muted);">Date of Issue: 16-Aug-2026</small>
+                        <small style="display: block; color: var(--text-muted);">Seal of Institution</small>
+                    </div>
+                    <div>
+                        <div style="font-family: cursive; font-size: 1.2rem; color: #2563eb;">Dean Academic Affairs</div>
+                        <strong style="border-top: 1px dashed var(--text-muted); display: block; margin-top: 6px; padding-top: 4px;">Authorized Signatory</strong>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px;" class="no-print">
+                    <button class="primary-btn" onclick="window.print()" style="width: auto;">🖨️ Print / Save as PDF</button>
+                    <button class="secondary-btn" onclick="document.getElementById('printableCertBox').style.display='none'">Close</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Request Document Modal -->
+    <div class="modal-overlay" id="requestDocModal">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3>Request Institutional Certificate</h3>
+                <button class="modal-close" onclick="closeRequestDocModal()">&times;</button>
+            </div>
+            <form id="requestDocForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="docTypeSelect">Select Certificate Type</label>
+                        <select id="docTypeSelect" required>
+                            <option value="Bonafide">Bonafide Certificate (For Bank, Passport, Bus Pass)</option>
+                            <option value="Fee Clearance">Fee Clearance / No Dues Certificate</option>
+                            <option value="Character Certificate">Character & Conduct Certificate</option>
+                            <option value="Internship NOC">Internship No-Objection Certificate (NOC)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="docPurpose">Purpose / Reason for Application</label>
+                        <textarea id="docPurpose" rows="3" placeholder="e.g. Required for Educational Loan / Passport Application..." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="secondary-btn" onclick="closeRequestDocModal()">Cancel</button>
+                    <button type="submit" class="primary-btn" style="width: auto;">Submit Request</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initStudentDocuments();
+        });
+    </script>
+</body>
+</html>

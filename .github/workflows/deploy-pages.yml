@@ -1,0 +1,76 @@
+name: Deploy frontend to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "FrontEnd/**"
+      - ".github/workflows/deploy-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Set backend URL in frontend files
+        env:
+          BACKEND_URL: ${{ vars.BACKEND_URL }}
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const backendUrl = process.env.BACKEND_URL;
+          if (!backendUrl) {
+            throw new Error('Set the BACKEND_URL repository variable to your deployed Render service URL.');
+          }
+          let parsed;
+          try {
+            parsed = new URL(backendUrl);
+          } catch {
+            throw new Error('BACKEND_URL must be a valid HTTPS URL.');
+          }
+          if (parsed.protocol !== 'https:') {
+            throw new Error('BACKEND_URL must use HTTPS.');
+          }
+          const origin = parsed.origin;
+          function update(directory) {
+            for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+              const filePath = path.join(directory, entry.name);
+              if (entry.isDirectory()) {
+                update(filePath);
+              } else if (/\.(html|js)$/i.test(entry.name)) {
+                const contents = fs.readFileSync(filePath, 'utf8');
+                fs.writeFileSync(filePath, contents.replaceAll('http://localhost:5001', origin));
+              }
+            }
+          }
+          update('FrontEnd');
+          NODE
+
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: FrontEnd
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

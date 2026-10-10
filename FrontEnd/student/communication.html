@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doubts & Messages | Student Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span class="logo-icon">🎓</span>
+                <div>
+                    <h2>Student Portal</h2>
+                    <small>School Management</small>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html"><span class="nav-icon">📊</span> Dashboard</a></li>
+                    <li><a href="profile.html"><span class="nav-icon">👤</span> Student Profile</a></li>
+                    <li><a href="courses.html"><span class="nav-icon">📚</span> Courses & Subjects</a></li>
+                    <li><a href="attendance.html"><span class="nav-icon">📅</span> Attendance</a></li>
+                    <li><a href="marks.html"><span class="nav-icon">📝</span> Marks & Results</a></li>
+                    <li><a href="timetable.html"><span class="nav-icon">⏰</span> Timetable</a></li>
+                    <li><a href="assignments.html"><span class="nav-icon">📂</span> Assignments</a></li>
+                    <li><a href="exams.html"><span class="nav-icon">📋</span> Examinations</a></li>
+                    <li><a href="fees.html"><span class="nav-icon">💳</span> Fees & Payments</a></li>
+                    <li><a href="notifications.html"><span class="nav-icon">🔔</span> Notifications</a></li>
+                    <li><a href="study-material.html"><span class="nav-icon">📖</span> Study Material</a></li>
+                    <li><a href="communication.html" class="active"><span class="nav-icon">💬</span> Doubts & Messages</a></li>
+                    <li><a href="documents.html"><span class="nav-icon">📄</span> ID & Certificates</a></li>
+                    <li><a href="leave.html"><span class="nav-icon">✈️</span> Leave Request</a></li>
+                    <li><a href="feedback.html"><span class="nav-icon">⭐</span> Feedback</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="logout-btn" style="width: 100%;" onclick="logout()">🚪 Logout</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <div>
+                    <h1>Ask Doubts & Teacher Communication</h1>
+                    <p style="margin: 4px 0 0 0; color: var(--text-muted);">Direct academic inquiry with subject faculty & resolution tracking</p>
+                </div>
+                <div class="page-header-actions">
+                    <button class="theme-toggle-btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+                    <button class="primary-btn" onclick="openAskDoubtModal()" style="width: auto;">❓ Ask a New Doubt</button>
+                </div>
+            </div>
+
+            <!-- Doubt History Cards -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>💬 My Academic Doubts & Faculty Responses</h3>
+                </div>
+
+                <div id="doubtsThreadContainer" style="display: flex; flex-direction: column; gap: 16px;">
+                    <p>Loading discussions...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Ask Doubt Modal -->
+    <div class="modal-overlay" id="askDoubtModal">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3>Ask Academic Doubt</h3>
+                <button class="modal-close" onclick="closeAskDoubtModal()">&times;</button>
+            </div>
+            <form id="askDoubtForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="doubtSubject">Select Subject</label>
+                        <select id="doubtSubject" required>
+                            <option value="Design & Analysis of Algorithms">Design & Analysis of Algorithms (Dr. Arvind Rao)</option>
+                            <option value="Database Management Systems">Database Management Systems (Prof. Priya Nair)</option>
+                            <option value="Operating Systems">Operating Systems (Prof. Rajesh Verma)</option>
+                            <option value="Web Technologies">Web Technologies (Dr. Ananya Roy)</option>
+                            <option value="Discrete Mathematics">Discrete Mathematics (Prof. S. K. Gupta)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="doubtQuestion">Your Question / Doubt Details</label>
+                        <textarea id="doubtQuestion" rows="4" placeholder="Describe the topic or question you need help with..." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="secondary-btn" onclick="closeAskDoubtModal()">Cancel</button>
+                    <button type="submit" class="primary-btn" style="width: auto;">Submit Doubt</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="../js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initStudentDoubts();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports - Admin Dashboard</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .filters {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+        }
+        .filter-group {
+            flex: 1;
+        }
+        .filter-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .btn-primary {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-primary:hover {
+            background-color: #45a049;
+        }
+        .btn-download {
+            background-color: #2196F3;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .report-table {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .percentage {
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        .low-percentage {
+            color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Reports</h1>
+        </div>
+
+        <div class="filters">
+            <div class="filter-group">
+                <label>Report Type</label>
+                <select id="reportType" onchange="onReportTypeChange()">
+                    <option value="attendance">Attendance Report</option>
+                    <option value="marks">Marks Report</option>
+                    <option value="fees">Fee Report</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Select Class</label>
+                <select id="classSelect" onchange="generateReport()">
+                    <option value="">Choose Class...</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Month</label>
+                <input type="month" id="monthInput" onchange="generateReport()">
+            </div>
+
+            <button class="btn-primary" onclick="generateReport()">Generate Report</button>
+            <button class="btn-download" onclick="downloadReport()">📥 Download PDF</button>
+        </div>
+
+        <div class="report-table">
+            <table id="reportTable">
+                <thead>
+                    <tr id="headerRow">
+                        <th>Student Name</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Report data will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.SCHOOL_API_BASE_URL || 'http://localhost:5001/api';
+        let currentReportData = [];
+        let currentReportType = 'attendance';
+
+        window.onload = () => {
+            loadClasses();
+            setCurrentMonth();
+        };
+
+        function setCurrentMonth() {
+            const now = new Date();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+            document.getElementById('monthInput').value = `${year}-${month}`;
+        }
+
+        async function loadClasses() {
+            try {
+                const response = await fetch(`${API_BASE}/classes`);
+                const classes = await response.json();
+                
+                const select = document.getElementById('classSelect');
+                classes.forEach(cls => {
+                    const option = document.createElement('option');
+                    option.value = cls._id;
+                    option.text = `${cls.name} - ${cls.section}`;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading classes:', error);
+            }
+        }
+
+        function onReportTypeChange() {
+            currentReportType = document.getElementById('reportType').value;
+            updateTableHeaders();
+        }
+
+        function updateTableHeaders() {
+            const headerRow = document.getElementById('headerRow');
+            
+            switch(currentReportType) {
+                case 'attendance':
+                    headerRow.innerHTML = `
+                        <th>Student Name</th>
+                        <th>Total Classes</th>
+                        <th>Present Days</th>
+                        <th>Absent Days</th>
+                        <th>Attendance %</th>
+                    `;
+                    break;
+                case 'marks':
+                    headerRow.innerHTML = `
+                        <th>Student Name</th>
+                        <th>Subject</th>
+                        <th>Marks Obtained</th>
+                        <th>Total Marks</th>
+                        <th>Grade</th>
+                    `;
+                    break;
+                case 'fees':
+                    headerRow.innerHTML = `
+                        <th>Student Name</th>
+                        <th>Fee Type</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Due Date</th>
+                    `;
+                    break;
+            }
+        }
+
+        async function generateReport() {
+            const classId = document.getElementById('classSelect').value;
+            if (!classId) {
+                alert('Please select a class');
+                return;
+            }
+
+            try {
+                let url = '';
+                if (currentReportType === 'attendance') {
+                    url = `${API_BASE}/analytics/report/attendance/${classId}`;
+                } else if (currentReportType === 'marks') {
+                    url = `${API_BASE}/analytics/report/marks/${classId}`;
+                }
+
+                const response = await fetch(url);
+                currentReportData = await response.json();
+                displayReport();
+            } catch (error) {
+                console.error('Error generating report:', error);
+                alert('Error generating report');
+            }
+        }
+
+        function displayReport() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            currentReportData.forEach(record => {
+                const row = document.createElement('tr');
+                
+                if (currentReportType === 'attendance') {
+                    const percentage = parseFloat(record.percentage);
+                    row.innerHTML = `
+                        <td>${record.studentName}</td>
+                        <td>${record.totalClasses}</td>
+                        <td>${record.presentDays}</td>
+                        <td>${record.absentDays}</td>
+                        <td class="${percentage < 75 ? 'low-percentage' : 'percentage'}">${record.percentage}%</td>
+                    `;
+                } else if (currentReportType === 'marks') {
+                    row.innerHTML = `
+                        <td>${record.studentName}</td>
+                        <td colspan="4"><strong>Total: ${record.totalMarks} | Average: ${record.averageMarks}</strong></td>
+                    `;
+                    tbody.appendChild(row);
+                    
+                    record.subjects.forEach(subject => {
+                        const subRow = document.createElement('tr');
+                        subRow.innerHTML = `
+                            <td style="padding-left: 40px;">↳ ${subject.subjectName}</td>
+                            <td colspan="4">${subject.marksObtained}/${subject.totalMarks} - ${subject.grade}</td>
+                        `;
+                        tbody.appendChild(subRow);
+                    });
+                    return;
+                }
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        function downloadReport() {
+            if (currentReportData.length === 0) {
+                alert('Please generate a report first');
+                return;
+            }
+
+            // Simple CSV download
+            let csv = '';
+            const headerRow = document.getElementById('headerRow');
+            const headers = Array.from(headerRow.cells).map(cell => cell.textContent);
+            csv += headers.join(',') + '\n';
+
+            currentReportData.forEach(record => {
+                const values = [];
+                if (currentReportType === 'attendance') {
+                    values.push(record.studentName, record.totalClasses, record.presentDays, record.absentDays, record.percentage);
+                }
+                csv += values.join(',') + '\n';
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${currentReportType}-report-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+        }
+    </script>
+</body>
+</html>

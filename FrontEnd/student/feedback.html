@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Feedback | Student Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span class="logo-icon">🎓</span>
+                <div>
+                    <h2>Student Portal</h2>
+                    <small>School Management</small>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html"><span class="nav-icon">📊</span> Dashboard</a></li>
+                    <li><a href="profile.html"><span class="nav-icon">👤</span> Student Profile</a></li>
+                    <li><a href="courses.html"><span class="nav-icon">📚</span> Courses & Subjects</a></li>
+                    <li><a href="attendance.html"><span class="nav-icon">📅</span> Attendance</a></li>
+                    <li><a href="marks.html"><span class="nav-icon">📝</span> Marks & Results</a></li>
+                    <li><a href="timetable.html"><span class="nav-icon">⏰</span> Timetable</a></li>
+                    <li><a href="assignments.html"><span class="nav-icon">📂</span> Assignments</a></li>
+                    <li><a href="exams.html"><span class="nav-icon">📋</span> Examinations</a></li>
+                    <li><a href="fees.html"><span class="nav-icon">💳</span> Fees & Payments</a></li>
+                    <li><a href="notifications.html"><span class="nav-icon">🔔</span> Notifications</a></li>
+                    <li><a href="study-material.html"><span class="nav-icon">📖</span> Study Material</a></li>
+                    <li><a href="communication.html"><span class="nav-icon">💬</span> Doubts & Messages</a></li>
+                    <li><a href="documents.html"><span class="nav-icon">📄</span> ID & Certificates</a></li>
+                    <li><a href="leave.html"><span class="nav-icon">✈️</span> Leave Request</a></li>
+                    <li><a href="feedback.html" class="active"><span class="nav-icon">⭐</span> Feedback</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="logout-btn" style="width: 100%;" onclick="logout()">🚪 Logout</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <div>
+                    <h1>Student Feedback & Ratings</h1>
+                    <p style="margin: 4px 0 0 0; color: var(--text-muted);">Share your feedback on faculty teaching, syllabus depth, and college facilities</p>
+                </div>
+                <div class="page-header-actions">
+                    <button class="theme-toggle-btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 24px; align-items: start;">
+                <!-- Feedback Submission Form -->
+                <div class="panel">
+                    <h3>⭐ Submit New Feedback</h3>
+                    <div id="feedbackAlert" class="alert-box" style="display: none; margin-top: 14px;"></div>
+
+                    <form id="studentFeedbackForm" style="margin-top: 18px;">
+                        <div class="form-group">
+                            <label for="feedbackCategory">Feedback Target</label>
+                            <select id="feedbackCategory" required>
+                                <option value="Teacher Feedback">Teacher Performance (Pedagogy & Punctuality)</option>
+                                <option value="Course Feedback">Course Curriculum & Lab Depth</option>
+                                <option value="College Feedback">College Infrastructure (Library, Labs, WiFi, Canteen)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="feedbackTarget">Faculty / Course Name</label>
+                            <input type="text" id="feedbackTarget" placeholder="e.g. Dr. Arvind Rao / Algorithms Lab" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="feedbackRating">Rating (1 to 5 Stars)</label>
+                            <select id="feedbackRating" required>
+                                <option value="5">⭐⭐⭐⭐⭐ 5 Stars - Excellent</option>
+                                <option value="4">⭐⭐⭐⭐ 4 Stars - Very Good</option>
+                                <option value="3">⭐⭐⭐ 3 Stars - Good</option>
+                                <option value="2">⭐⭐ 2 Stars - Fair</option>
+                                <option value="1">⭐ 1 Star - Poor</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="feedbackComments">Detailed Comments & Suggestions</label>
+                            <textarea id="feedbackComments" rows="4" placeholder="Your honest, constructive feedback helps us improve..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="primary-btn">Submit Feedback</button>
+                    </form>
+                </div>
+
+                <!-- Past Feedback & History -->
+                <div class="panel">
+                    <h3>📜 Previously Submitted Feedbacks</h3>
+                    <div id="feedbackListContainer" style="display: flex; flex-direction: column; gap: 14px; margin-top: 18px;">
+                        <p style="color: var(--text-muted);">No feedback records found yet.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initStudentFeedback();
+        });
+    </script>
+</body>
+</html>

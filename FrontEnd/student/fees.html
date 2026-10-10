@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fees & Payments | Student Portal</title>
+    <!-- Razorpay Checkout Gateway SDK -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <!-- jsPDF & autotable for Client-side PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .fee-receipt-card {
+            border: 2px dashed var(--border-color);
+            background: var(--bg-card);
+            border-radius: 14px;
+            padding: 24px;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span class="logo-icon">🎓</span>
+                <div>
+                    <h2>Student Portal</h2>
+                    <small>School Management</small>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html"><span class="nav-icon">📊</span> Dashboard</a></li>
+                    <li><a href="profile.html"><span class="nav-icon">👤</span> Student Profile</a></li>
+                    <li><a href="courses.html"><span class="nav-icon">📚</span> Courses & Subjects</a></li>
+                    <li><a href="attendance.html"><span class="nav-icon">📅</span> Attendance</a></li>
+                    <li><a href="marks.html"><span class="nav-icon">📝</span> Marks & Results</a></li>
+                    <li><a href="timetable.html"><span class="nav-icon">⏰</span> Timetable</a></li>
+                    <li><a href="assignments.html"><span class="nav-icon">📂</span> Assignments</a></li>
+                    <li><a href="exams.html"><span class="nav-icon">📋</span> Examinations</a></li>
+                    <li><a href="fees.html" class="active"><span class="nav-icon">💳</span> Fees & Payments</a></li>
+                    <li><a href="notifications.html"><span class="nav-icon">🔔</span> Notifications</a></li>
+                    <li><a href="study-material.html"><span class="nav-icon">📖</span> Study Material</a></li>
+                    <li><a href="communication.html"><span class="nav-icon">💬</span> Doubts & Messages</a></li>
+                    <li><a href="documents.html"><span class="nav-icon">📄</span> ID & Certificates</a></li>
+                    <li><a href="leave.html"><span class="nav-icon">✈️</span> Leave Request</a></li>
+                    <li><a href="feedback.html"><span class="nav-icon">⭐</span> Feedback</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="logout-btn" style="width: 100%;" onclick="logout()">🚪 Logout</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <div>
+                    <h1>Fees Management & Online Payments</h1>
+                    <p style="margin: 4px 0 0 0; color: var(--text-muted);">Semester 4 Academic & Laboratory Fees</p>
+                </div>
+                <div class="page-header-actions" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <button class="theme-toggle-btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+                    <button class="primary-btn" onclick="openRazorpayPaymentModal()" style="width: auto; background: #2563eb;" id="payRazorpayBtn">
+                        💳 Pay via Razorpay Gateway
+                    </button>
+                    <button class="secondary-btn" onclick="openPayFeeModal()" style="width: auto;" id="quickPayBtn">
+                        ⚡ Pay Fee
+                    </button>
+                </div>
+            </div>
+
+            <!-- Fee Summary Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span>Total Semester Fee</span>
+                    <h3 id="feeTotalAmount">₹45,000</h3>
+                    <small>Academic Session 2025-26</small>
+                </div>
+                <div class="stat-card">
+                    <span>Paid Amount</span>
+                    <h3 id="feePaidAmount" style="color: #10b981;">₹30,000</h3>
+                    <small style="color: #10b981;">✓ Cleared</small>
+                </div>
+                <div class="stat-card">
+                    <span>Pending Balance</span>
+                    <h3 id="feePendingAmount" style="color: #f59e0b;">₹15,000</h3>
+                    <small style="color: #f59e0b;">Due Date: Sep 15, 2026</small>
+                </div>
+                <div class="stat-card">
+                    <span>Fee Status</span>
+                    <h3 id="feeStatusBadge" style="color: #2563eb;">Partial</h3>
+                    <small>1 Installment Remaining</small>
+                </div>
+            </div>
+
+            <!-- Fee Component Breakdown Table -->
+            <div class="table-card">
+                <div class="panel-header">
+                    <h3>📑 Fee Structure Breakdown (Semester 4)</h3>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fee Component</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="feeComponentsTableBody">
+                        <tr><td colspan="3">Loading fee breakdown...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Transaction History & Receipts Table -->
+            <div class="table-card">
+                <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3>📜 Payment History & E-Receipts</h3>
+                    <small style="color: var(--text-muted);">PDF receipts available for all verified transactions</small>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Transaction ID</th>
+                            <th>Date</th>
+                            <th>Category</th>
+                            <th>Payment Method</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionsTableBody">
+                        <tr><td colspan="7">Loading transaction logs...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Printable Fee Receipt Box -->
+            <div class="fee-receipt-card" id="printableReceiptBox">
+                <div style="text-align: center; border-bottom: 1px solid var(--border-color); padding-bottom: 14px; margin-bottom: 14px;">
+                    <h3 style="margin: 0; color: var(--primary-blue);">BABU BANARASI DAS UNIVERSITY, LUCKNOW</h3>
+                    <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: var(--text-muted);">Official Fee Payment E-Receipt</p>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; font-size: 0.9rem; margin-bottom: 14px;">
+                    <div><strong>Receipt No:</strong> <span id="recNo">RCP-2026-074</span></div>
+                    <div><strong>Transaction ID:</strong> <span id="recTxnId">TXN-8849102</span></div>
+                    <div><strong>Student Name:</strong> <span id="recStudentName">Student One</span></div>
+                    <div><strong>Roll No:</strong> <span id="recRollNo">STD-2026-042</span></div>
+                    <div><strong>Date of Payment:</strong> <span id="recDate">2026-07-28</span></div>
+                    <div><strong>Payment Method:</strong> <span id="recMethod">UPI (Google Pay)</span></div>
+                    <div><strong>Amount Paid:</strong> <span id="recAmount" style="font-weight: 700; color: #10b981;">₹30,000</span></div>
+                    <div><strong>Payment Status:</strong> <span class="badge badge-success">Success</span></div>
+                </div>
+                <div style="text-align: right; margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+                    <button class="primary-btn" style="width: auto; background: #10b981;" onclick="downloadActiveFeeReceiptPDF()">
+                        ⬇️ Download Official PDF Receipt
+                    </button>
+                    <button class="secondary-btn" onclick="window.print()">🖨️ Print Receipt</button>
+                    <button class="secondary-btn" onclick="document.getElementById('printableReceiptBox').style.display='none'">Close</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Pay Fee Modal -->
+    <div class="modal-overlay" id="payFeeModal">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3>Online Payment Gateway</h3>
+                <button class="modal-close" onclick="closePayFeeModal()">&times;</button>
+            </div>
+            <form id="onlinePaymentForm">
+                <div class="modal-body">
+                    <div class="alert-box alert-success" style="margin-bottom: 16px;">
+                        🔒 Payment is processed and verified by Razorpay Checkout.
+                    </div>
+
+                    <div class="form-group">
+                        <label for="payAmountInput">Payment Amount (₹)</label>
+                        <input type="number" id="payAmountInput" value="0" min="1" max="45000" step="1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="paymentMethodSelect">Select Payment Method</label>
+                        <select id="paymentMethodSelect" onchange="togglePaymentInputs()">
+                            <option value="Razorpay">Razorpay Checkout (UPI, Cards, NetBanking)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="secondary-btn" onclick="closePayFeeModal()">Cancel</button>
+                    <button type="submit" class="primary-btn" style="width: auto;">Pay ₹<span id="btnPayAmountText">15,000</span> Now</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initStudentFees();
+        });
+    </script>
+</body>
+</html>

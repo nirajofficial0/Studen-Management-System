@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examinations & Admit Card | Student Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        .admit-card-box {
+            border: 2px solid var(--border-color);
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 26px;
+            margin-top: 24px;
+        }
+        .admit-header {
+            text-align: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 16px;
+            margin-bottom: 18px;
+        }
+        .admit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            background: var(--bg-secondary);
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span class="logo-icon">🎓</span>
+                <div>
+                    <h2>Student Portal</h2>
+                    <small>School Management</small>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html"><span class="nav-icon">📊</span> Dashboard</a></li>
+                    <li><a href="profile.html"><span class="nav-icon">👤</span> Student Profile</a></li>
+                    <li><a href="courses.html"><span class="nav-icon">📚</span> Courses & Subjects</a></li>
+                    <li><a href="attendance.html"><span class="nav-icon">📅</span> Attendance</a></li>
+                    <li><a href="marks.html"><span class="nav-icon">📝</span> Marks & Results</a></li>
+                    <li><a href="timetable.html"><span class="nav-icon">⏰</span> Timetable</a></li>
+                    <li><a href="assignments.html"><span class="nav-icon">📂</span> Assignments</a></li>
+                    <li><a href="exams.html" class="active"><span class="nav-icon">📋</span> Examinations</a></li>
+                    <li><a href="fees.html"><span class="nav-icon">💳</span> Fees & Payments</a></li>
+                    <li><a href="notifications.html"><span class="nav-icon">🔔</span> Notifications</a></li>
+                    <li><a href="study-material.html"><span class="nav-icon">📖</span> Study Material</a></li>
+                    <li><a href="communication.html"><span class="nav-icon">💬</span> Doubts & Messages</a></li>
+                    <li><a href="documents.html"><span class="nav-icon">📄</span> ID & Certificates</a></li>
+                    <li><a href="leave.html"><span class="nav-icon">✈️</span> Leave Request</a></li>
+                    <li><a href="feedback.html"><span class="nav-icon">⭐</span> Feedback</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="logout-btn" style="width: 100%;" onclick="logout()">🚪 Logout</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <div>
+                    <h1>Semester Examination Schedule & Admit Card</h1>
+                    <p style="margin: 4px 0 0 0; color: var(--text-muted);">Spring 2026 End-Semester Examinations</p>
+                </div>
+                <div class="page-header-actions">
+                    <button class="theme-toggle-btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+                    <button class="primary-btn" onclick="window.print()" style="width: auto;">🖨️ Download / Print Admit Card</button>
+                </div>
+            </div>
+
+            <!-- Examination Timetable Cards -->
+            <div class="table-card">
+                <div class="panel-header">
+                    <h3>📅 Exam Date Sheet & Hall Allocations</h3>
+                    <span class="badge badge-info">5 Papers Scheduled</span>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Subject Code</th>
+                            <th>Subject Title</th>
+                            <th>Exam Room / Hall</th>
+                            <th>Allocated Seat</th>
+                            <th>Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody id="examScheduleTableBody">
+                        <tr><td colspan="7">Loading exam schedule...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Official Printable Admit Card -->
+            <div class="admit-card-box" id="printableAdmitCard">
+                <div class="admit-header">
+                    <h2 style="margin: 0 0 4px 0; color: var(--primary-blue);">BABU BANARASI DAS UNIVERSITY,LUCKNOW  </h2>
+                    <h4 style="margin: 0; color: var(--text-muted);">OFFICIAL HALL TICKET / ADMIT CARD • Spring 2026</h4>
+                    <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: var(--text-muted);">Center: Main Examination Complex, Block A</p>
+                </div>
+
+                <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;">
+                    <div class="admit-grid" style="flex: 1; margin-bottom: 0;">
+                        <div><strong>Candidate Name:</strong> <span id="admitName">Student One</span></div>
+                        <div><strong>Roll Number:</strong> <span id="admitRoll">STD-2026-042</span></div>
+                        <div><strong>Course / Branch:</strong> <span id="admitCourse">BACHELOR OF COMPUTER APPLICATION (BCA)</span></div>
+                        <div><strong>Semester:</strong> <span id="admitSem">Semester 4</span></div>
+                    </div>
+                    <div style="text-align: center; background: white; padding: 10px; border-radius: 10px; border: 1px solid var(--border-color);">
+                        <div id="admitQRCode"></div>
+                        <small style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-top: 4px;">Admit Card QR</small>
+                    </div>
+                </div>
+
+                <h4>Important Exam Instructions:</h4>
+                <ol style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; padding-left: 20px;">
+                    <li>Candidates must report to their assigned examination hall 20 minutes before commencement.</li>
+                    <li>Possession of electronic gadgets, mobile phones, or smart watches inside the hall will lead to immediate cancellation.</li>
+                    <li>Must carry valid Student ID card alongside this printed Hall Ticket.</li>
+                </ol>
+
+                <div style="display: flex; justify-content: space-between; margin-top: 36px; padding-top: 14px; border-top: 1px dashed var(--border-color);">
+                    <div style="text-align: center;">
+                        <span style="font-size: 0.85rem; display: block; border-top: 1px solid var(--text-muted); width: 140px;">Candidate Signature</span>
+                    </div>
+                    <div style="text-align: center;">
+                        <span style="font-size: 0.85rem; display: block; border-top: 1px solid var(--text-muted); width: 140px;">Controller of Exams</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initStudentExams();
+        });
+    </script>
+</body>
+</html>

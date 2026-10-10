@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .mark-all-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .notification {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid #4CAF50;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .notification:hover {
+            background: #f9f9f9;
+        }
+        .notification.unread {
+            background: #f0f7ff;
+            border-left-color: #2196F3;
+        }
+        .notification.exam {
+            border-left-color: #FF9800;
+        }
+        .notification.attendance {
+            border-left-color: #4CAF50;
+        }
+        .notification.marks {
+            border-left-color: #2196F3;
+        }
+        .notification.fee {
+            border-left-color: #f44336;
+        }
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 8px;
+        }
+        .notification-title {
+            font-weight: bold;
+            color: #333;
+            font-size: 16px;
+            margin: 0;
+        }
+        .notification-time {
+            color: #999;
+            font-size: 12px;
+        }
+        .notification-message {
+            color: #666;
+            font-size: 14px;
+            margin: 8px 0 0 0;
+        }
+        .notification-badge {
+            display: inline-block;
+            background-color: #2196F3;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+        .filters {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .filter-btn.active {
+            background-color: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+        .filter-btn:hover {
+            border-color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Notifications</h1>
+            <button class="mark-all-btn" onclick="markAllAsRead()">Mark All as Read</button>
+        </div>
+
+        <div class="filters">
+            <button class="filter-btn active" onclick="filterNotifications('all')">All</button>
+            <button class="filter-btn" onclick="filterNotifications('exam')">Exams</button>
+            <button class="filter-btn" onclick="filterNotifications('attendance')">Attendance</button>
+            <button class="filter-btn" onclick="filterNotifications('marks')">Marks</button>
+            <button class="filter-btn" onclick="filterNotifications('fee')">Fees</button>
+        </div>
+
+        <div id="notificationsContainer">
+            <!-- Notifications will be loaded here -->
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.SCHOOL_API_BASE_URL || 'http://localhost:5001/api';
+        let allNotifications = [];
+        let currentFilter = 'all';
+        const userId = localStorage.getItem('userId');
+
+        window.onload = () => {
+            loadNotifications();
+        };
+
+        async function loadNotifications() {
+            try {
+                const response = await fetch(`${API_BASE}/notifications/${userId}`);
+                allNotifications = await response.json();
+                displayNotifications();
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+            }
+        }
+
+        function displayNotifications() {
+            const container = document.getElementById('notificationsContainer');
+            container.innerHTML = '';
+
+            let filtered = allNotifications;
+            if (currentFilter !== 'all') {
+                filtered = allNotifications.filter(n => n.type === currentFilter);
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="empty-state">No notifications</div>';
+                return;
+            }
+
+            filtered.forEach(notification => {
+                const notif = document.createElement('div');
+                notif.className = `notification ${notification.type} ${!notification.isRead ? 'unread' : ''}`;
+                
+                const time = new Date(notification.createdAt);
+                const timeAgo = getTimeAgo(time);
+                
+                notif.innerHTML = `
+                    <div class="notification-header">
+                        <h3 class="notification-title">${notification.title}</h3>
+                        <span class="notification-time">${timeAgo}</span>
+                    </div>
+                    <p class="notification-message">${notification.message}</p>
+                `;
+                
+                notif.onclick = () => markAsRead(notification._id);
+                container.appendChild(notif);
+            });
+        }
+
+        function filterNotifications(type) {
+            currentFilter = type;
+            
+            // Update button states
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            displayNotifications();
+        }
+
+        async function markAsRead(notificationId) {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/notifications/${notificationId}/read`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    // Update local data
+                    const notif = allNotifications.find(n => n._id === notificationId);
+                    if (notif) notif.isRead = true;
+                    displayNotifications();
+                }
+            } catch (error) {
+                console.error('Error marking notification as read:', error);
+            }
+        }
+
+        async function markAllAsRead() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/notifications/${userId}/readAll`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    allNotifications.forEach(n => n.isRead = true);
+                    displayNotifications();
+                }
+            } catch (error) {
+                console.error('Error marking all as read:', error);
+            }
+        }
+
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diff = now - date;
+            const seconds = Math.floor(diff / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+
+            if (days > 0) return `${days}d ago`;
+            if (hours > 0) return `${hours}h ago`;
+            if (minutes > 0) return `${minutes}m ago`;
+            return 'Just now';
+        }
+    </script>
+</body>
+</html>

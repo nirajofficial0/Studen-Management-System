@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Student Portal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span class="logo-icon">🎓</span>
+                <div>
+                    <h2>Student Portal</h2>
+                    <small>School Management</small>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html" class="active"><span class="nav-icon">📊</span> Dashboard</a></li>
+                    <li><a href="profile.html"><span class="nav-icon">👤</span> Student Profile</a></li>
+                    <li><a href="courses.html"><span class="nav-icon">📚</span> Courses & Subjects</a></li>
+                    <li><a href="attendance.html"><span class="nav-icon">📅</span> Attendance</a></li>
+                    <li><a href="marks.html"><span class="nav-icon">📝</span> Marks & Results</a></li>
+                    <li><a href="timetable.html"><span class="nav-icon">⏰</span> Timetable</a></li>
+                    <li><a href="assignments.html"><span class="nav-icon">📂</span> Assignments</a></li>
+                    <li><a href="exams.html"><span class="nav-icon">📋</span> Examinations</a></li>
+                    <li><a href="fees.html"><span class="nav-icon">💳</span> Fees & Payments</a></li>
+                    <li><a href="notifications.html"><span class="nav-icon">🔔</span> Notifications</a></li>
+                    <li><a href="study-material.html"><span class="nav-icon">📖</span> Study Material</a></li>
+                    <li><a href="communication.html"><span class="nav-icon">💬</span> Doubts & Messages</a></li>
+                    <li><a href="documents.html"><span class="nav-icon">📄</span> ID & Certificates</a></li>
+                    <li><a href="leave.html"><span class="nav-icon">✈️</span> Leave Request</a></li>
+                    <li><a href="feedback.html"><span class="nav-icon">⭐</span> Feedback</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="logout-btn" style="width: 100%;" onclick="logout()">🚪 Logout</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <div>
+                    <h1 id="welcomeMessage">Welcome Back, Student!</h1>
+                    <p style="margin: 4px 0 0 0; color: var(--text-muted);" id="studentSubtitle">BACHELOR OF COMPUTER APPLICATION (BCA) • Semester 4 • Roll: STD-2026-042</p>
+                </div>
+                <div class="page-header-actions">
+                    <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+                    <a href="profile.html" class="secondary-btn" style="display: flex; align-items: center; gap: 6px;">
+                        <span id="userAvatarIcon">👤</span> Profile
+                    </a>
+                </div>
+            </div>
+
+            <!-- AI Academic Advisor Banner -->
+            <div class="ai-advisor-card" id="aiAdvisorBox">
+                <div class="ai-icon-bubble">🤖</div>
+                <div class="ai-content" style="flex: 1;">
+                    <h3>AI Academic Advisor <span class="badge-ai">Smart Insight</span></h3>
+                    <p id="aiAdvisorText">Analyzing your recent attendance & quiz performance... Keep your attendance above 75% in Discrete Mathematics to guarantee exam eligibility!</p>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span>Overall Attendance</span>
+                    <h3 id="statAttendance">87.5%</h3>
+                    <small style="color: #10b981;">✓ Eligible for End-Sem Exams</small>
+                </div>
+                <div class="stat-card">
+                    <span>Current SGPA / CGPA</span>
+                    <h3 id="statGPA">8.82</h3>
+                    <small>Grade: A+ (Outstanding)</small>
+                </div>
+                <div class="stat-card">
+                    <span>Fee Balance</span>
+                    <h3 id="statPendingFees">₹15,000</h3>
+                    <small style="color: #f59e0b;">Due on Sep 15, 2026</small>
+                </div>
+                <div class="stat-card">
+                    <span>Pending Tasks</span>
+                    <h3 id="statAssignments">2</h3>
+                    <small>Active assignments due this week</small>
+                </div>
+            </div>
+
+            <!-- Charts & Analytics Section -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px; margin-bottom: 24px;">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3>📈 Attendance Performance</h3>
+                        <a href="attendance.html" class="forgot-link">View Detailed Log →</a>
+                    </div>
+                    <div style="height: 240px; position: relative;">
+                        <canvas id="attendanceChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3>🎯 Subject Marks Distribution</h3>
+                        <a href="marks.html" class="forgot-link">Download Report Card →</a>
+                    </div>
+                    <div style="height: 240px; position: relative;">
+                        <canvas id="marksChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Action Cards & Notices -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3>📂 Urgent Assignments</h3>
+                        <a href="assignments.html" class="forgot-link">All Assignments →</a>
+                    </div>
+                    <div id="dashboardAssignmentsList">
+                        <p style="color: var(--text-muted);">Loading assignments...</p>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3>📢 Announcements</h3>
+                        <a href="notifications.html" class="forgot-link">View All →</a>
+                    </div>
+                    <ul id="noticeList" class="notice-list">
+                        <li>Loading notices...</li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initStudentDashboard();
+        });
+    </script>
+</body>
+</html>

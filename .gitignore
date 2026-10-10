@@ -1,0 +1,15 @@
+# Dependencies and local configuration
+**/node_modules/
+**/.env
+**/.env.*
+!BackEnd/.env.example
+
+# Local data and uploaded files
+BackEnd/db.json
+BackEnd/uploads/
+
+# Logs and editor/OS files
+*.log
+.DS_Store
+Thumbs.db
+.vscode/

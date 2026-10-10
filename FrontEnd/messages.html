@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - Dashboard</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            height: 600px;
+        }
+        .sidebar {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-area {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        .conversation-list {
+            flex: 1;
+            overflow-y: auto;
+            border-bottom: 1px solid #ddd;
+        }
+        .conversation-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .conversation-item:hover {
+            background-color: #f5f5f5;
+        }
+        .conversation-item.active {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4CAF50;
+        }
+        .conversation-item .name {
+            font-weight: bold;
+            color: #333;
+        }
+        .conversation-item .preview {
+            color: #999;
+            font-size: 12px;
+            margin-top: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .conversation-item .time {
+            color: #999;
+            font-size: 11px;
+            margin-top: 3px;
+        }
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .message {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .message.sent {
+            justify-content: flex-end;
+        }
+        .message-bubble {
+            max-width: 70%;
+            padding: 12px 15px;
+            border-radius: 8px;
+            word-wrap: break-word;
+        }
+        .message.received .message-bubble {
+            background-color: #e8f5e9;
+            color: #333;
+        }
+        .message.sent .message-bubble {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .message-time {
+            font-size: 11px;
+            color: #999;
+        }
+        .input-area {
+            padding: 15px;
+            border-top: 1px solid #ddd;
+            display: flex;
+            gap: 10px;
+        }
+        .input-area input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .input-area button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .input-area button:hover {
+            background-color: #45a049;
+        }
+        .new-message-btn {
+            padding: 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 4px 4px 0 0;
+        }
+        .no-conversation {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #999;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <button class="new-message-btn" onclick="openNewMessageModal()">+ New Message</button>
+            <div class="conversation-list" id="conversationList">
+                <!-- Conversations will be loaded here -->
+            </div>
+        </div>
+
+        <div class="chat-area">
+            <div class="messages" id="messagesContainer">
+                <div class="no-conversation">Select a conversation to start chatting</div>
+            </div>
+            <div class="input-area">
+                <input type="text" id="messageInput" placeholder="Type your message..." />
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.SCHOOL_API_BASE_URL || 'http://localhost:5001/api';
+        let currentConversation = null;
+        const userId = localStorage.getItem('userId');
+
+        window.onload = () => {
+            loadConversations();
+        };
+
+        async function loadConversations() {
+            try {
+                const inboxResponse = await fetch(`${API_BASE}/messages/inbox/${userId}`);
+                const sentResponse = await fetch(`${API_BASE}/messages/sent/${userId}`);
+                
+                const inbox = await inboxResponse.json();
+                const sent = await sentResponse.json();
+                
+                displayConversations([...inbox, ...sent]);
+            } catch (error) {
+                console.error('Error loading conversations:', error);
+            }
+        }
+
+        function displayConversations(messages) {
+            const list = document.getElementById('conversationList');
+            list.innerHTML = '';
+
+            const conversations = {};
+            
+            messages.forEach(msg => {
+                const otherUserId = msg.sender._id === userId ? msg.recipient._id : msg.sender._id;
+                const otherUserName = msg.sender._id === userId ? msg.recipient.name : msg.sender.name;
+                
+                if (!conversations[otherUserId]) {
+                    conversations[otherUserId] = {
+                        userId: otherUserId,
+                        name: otherUserName,
+                        lastMessage: msg.message,
+                        lastTime: msg.createdAt
+                    };
+                }
+            });
+
+            Object.values(conversations).forEach(conv => {
+                const item = document.createElement('div');
+                item.className = 'conversation-item';
+                item.onclick = () => openConversation(conv.userId, conv.name);
+                
+                item.innerHTML = `
+                    <div class="name">${conv.name}</div>
+                    <div class="preview">${conv.lastMessage.substring(0, 40)}...</div>
+                    <div class="time">${new Date(conv.lastTime).toLocaleDateString()}</div>
+                `;
+                
+                list.appendChild(item);
+            });
+        }
+
+        async function openConversation(otherUserId, name) {
+            currentConversation = { userId: otherUserId, name };
+            
+            try {
+                const response = await fetch(`${API_BASE}/messages/conversation/${userId}/${otherUserId}`);
+                const messages = await response.json();
+                displayMessages(messages);
+            } catch (error) {
+                console.error('Error loading conversation:', error);
+            }
+        }
+
+        function displayMessages(messages) {
+            const container = document.getElementById('messagesContainer');
+            container.innerHTML = '';
+
+            messages.forEach(msg => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${msg.sender._id === userId ? 'sent' : 'received'}`;
+                
+                messageDiv.innerHTML = `
+                    <div>
+                        <div class="message-bubble">${msg.message}</div>
+                        <div class="message-time">${new Date(msg.createdAt).toLocaleTimeString()}</div>
+                    </div>
+                `;
+                
+                container.appendChild(messageDiv);
+            });
+
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function sendMessage() {
+            if (!currentConversation) {
+                alert('Select a conversation first');
+                return;
+            }
+
+            const messageText = document.getElementById('messageInput').value;
+            if (!messageText.trim()) return;
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/messages`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        sender: userId,
+                        recipient: currentConversation.userId,
+                        message: messageText
+                    })
+                });
+
+                if (response.ok) {
+                    document.getElementById('messageInput').value = '';
+                    openConversation(currentConversation.userId, currentConversation.name);
+                }
+            } catch (error) {
+                console.error('Error sending message:', error);
+            }
+        }
+
+        function openNewMessageModal() {
+            alert('New message compose window will open here');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Attendance</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <h2>👨‍🏫 Teacher</h2>
+            <nav>
+                <ul>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="manage_attendance.html">Manage Attendance</a></li>
+                    <li><a href="manage-marks.html">Manage Marks</a></li>
+                    <li><a href="#" onclick="logout()">Logout</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <h1>Manage Attendance</h1>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+
+            <section class="panel">
+                <div class="form-group">
+                    <label for="attendanceSubject">Subject</label>
+                    <input id="attendanceSubject" type="text" placeholder="Enter subject name" value="Math">
+                </div>
+
+                <div class="table-card">
+                    <table id="attendanceTable">
+                        <thead>
+                            <tr>
+                                <th>Student Name</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <button id="saveAttendanceBtn" class="primary-btn mt-2" type="button">Save Attendance</button>
+            </section>
+        </main>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script>
+        renderTeacherAttendancePage();
+    </script>
+</body>
+</html>
