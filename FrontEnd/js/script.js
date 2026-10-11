@@ -1,4 +1,14 @@
-const API_BASE_URL = `${window.SCHOOL_API_ORIGIN || "http://localhost:5001"}/api`;
+const IS_LOCAL_HOST = window.location.hostname === "localhost" ||
+                      window.location.hostname === "127.0.0.1" ||
+                      window.location.protocol === "file:";
+
+const PRODUCTION_API_ORIGIN = "https://school-management-api.onrender.com";
+
+const ACTIVE_API_ORIGIN = window.SCHOOL_API_ORIGIN ||
+                          localStorage.getItem("school_api_origin") ||
+                          (IS_LOCAL_HOST ? "http://localhost:5001" : PRODUCTION_API_ORIGIN);
+
+const API_BASE_URL = `${ACTIVE_API_ORIGIN}/api`;
 
 const STORAGE_KEYS = {
     users: "school_users",
@@ -118,7 +128,7 @@ async function apiRequest(endpoint, options = {}) {
 function openRealtimeSocket() {
     if (!window.io || !getToken()) return null;
     if (!window.schoolSocket) {
-        window.schoolSocket = window.io(window.SCHOOL_API_ORIGIN || "http://localhost:5001", {
+        window.schoolSocket = window.io(ACTIVE_API_ORIGIN, {
             auth: { token: getToken() }
         });
     }

@@ -36,7 +36,9 @@ const allowedOrigins = (process.env.FRONTEND_URL || '')
 const isAllowedOrigin = origin =>
   !origin ||
   process.env.NODE_ENV !== 'production' ||
-  allowedOrigins.includes(origin);
+  allowedOrigins.length === 0 ||
+  allowedOrigins.includes(origin) ||
+  allowedOrigins.includes('*');
 
 // Initialize HTTP server & Socket.io for Real-time WebSockets
 const server = http.createServer(app);
